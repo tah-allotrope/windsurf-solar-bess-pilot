@@ -395,13 +395,43 @@ def extract_measures_truth(measures_df: Optional[pd.DataFrame]) -> Dict[str, flo
 
     truth = {}
     truth["solar_gen_mwh"] = (
-        search_metric_any(measures_df, [["solar", "generation"], ["solar", "gen"], ["solar", "mwh"]]) or 0.0
+        search_metric_any(
+            measures_df,
+            [
+                ["total", "solar", "generation"],
+                ["solar", "generation"],
+                ["solar", "gen"],
+                ["solar", "mwh"],
+            ],
+        )
+        or 0.0
     )
     truth["grid_export_mwh"] = (
-        search_metric_any(measures_df, [["grid", "export"], ["export", "mwh"], ["surplus", "grid"]]) or 0.0
+        search_metric_any(
+            measures_df,
+            [
+                ["pv", "surplus"],
+                ["surplusenergy"],
+                ["surplus", "energy"],
+                ["power", "surplus"],
+                ["grid", "export"],
+                ["export", "mwh"],
+            ],
+        )
+        or 0.0
     )
     truth["bess_discharge_mwh"] = (
-        search_metric_any(measures_df, [["bess", "discharge"], ["battery", "discharge"], ["bess", "mwh"]]) or 0.0
+        search_metric_any(
+            measures_df,
+            [
+                ["bess-to-load"],
+                ["bess", "load"],
+                ["bess", "discharge"],
+                ["battery", "discharge"],
+                ["bess", "mwh"],
+            ],
+        )
+        or 0.0
     )
 
     return truth
