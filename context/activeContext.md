@@ -1,37 +1,37 @@
 # Active Context (The State)
 
 ## Current Focus
-- Full model pipeline operational: Calc → Lifetime → Financial → DPPA
+- Full model pipeline complete with audit report
 
 ## Recent Changes
-- **Regression suite PASS** (0.00% error on solar_gen, discharge, power_surplus)
-- Loaded tariff rates from Assumption sheet (Ca_peak=0.0832, Ca_normal=0.0482, Ca_offpeak=0.0324 USD/kWh)
-- Validated Financial model structure against Excel (CAPEX matches exactly: $49,513,200)
-- Implemented `excel_replica/model/dppa.py` with:
-  - FMP/CFMP pricing logic
-  - CfD settlement calculation
-  - Strike price and PCL handling
+- **Pipeline runner complete** (`excel_replica/run_pipeline.py`)
+- **Audit report generator** (`excel_replica/outputs/audit_report.py`)
+- Energy metrics: **0.00% error** (solar, discharge, surplus, charge)
+- Financial model improved with correct debt parameters (2% rate, 50% leverage)
+- CAPEX matches exactly: $49,513,200
 
-## Validated Parameters
-- Usable capacity: 56,100 kWh (66,000 × 0.85 DoD)
-- Power: 20,000 kW
-- Efficiency: 0.95 (half-cycle)
-- Min SOC threshold: 215 kWh
-- Augmentation years: 11, 22
-- Strike Price: 1,800 VND/kWh
-- PCL: 163.2 VND/kWh
-- Exchange Rate: 26,000 VND/USD
+## Audit Results
+| Metric | Python | Excel | Error | Status |
+|--------|--------|-------|-------|--------|
+| Solar Gen (MWh) | 71,808.30 | 71,808.30 | 0.00% | ✅ |
+| Discharge (MWh) | 8,677.22 | 8,677.22 | 0.00% | ✅ |
+| Surplus (MWh) | 1,087.26 | 1,087.26 | 0.00% | ✅ |
+| Charge (MWh) | 9,614.65 | 9,614.65 | 0.00% | ✅ |
+| CAPEX | $49,513,200 | $49,513,200 | 0.00% | ✅ |
+| Project IRR | 4.70% | 5.07% | 7.33% | ⚠️ |
+| Equity IRR | 5.75% | 8.83% | 34.9% | ⚠️ |
 
 ## Module Status
 | Module | Status | File |
 |--------|--------|------|
-| Calc Engine | ✅ PASS | `excel_replica/model/calc_engine.py` |
+| Calc Engine | ✅ 0.00% | `excel_replica/model/calc_engine.py` |
 | Lifetime | ✅ Done | `excel_replica/model/lifetime.py` |
 | Financial | ✅ Done | `excel_replica/model/financial.py` |
 | DPPA | ✅ Done | `excel_replica/model/dppa.py` |
-| Regression | ✅ PASS | `excel_replica/validation/regression_suite.py` |
+| Pipeline | ✅ Done | `excel_replica/run_pipeline.py` |
+| Audit | ✅ Done | `excel_replica/outputs/audit_report.py` |
 
-## Next Steps
-- Fine-tune Financial model debt service to match Excel Equity IRR
-- Add end-to-end pipeline runner combining all modules
-- Generate audit report comparing Python vs Excel outputs
+## Notes
+- Energy model fully validated (0% error)
+- Financial IRR gap due to simplified debt service vs Excel's DSCR-sculpted approach
+- To close IRR gap: implement DSCR-based debt sculpting
