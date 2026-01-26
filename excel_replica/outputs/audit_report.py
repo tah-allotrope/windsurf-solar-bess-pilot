@@ -37,6 +37,11 @@ def load_excel_truth(file_path: Path) -> Dict[str, float]:
     truth["equity_irr"] = fin_df.iloc[188, 6] if pd.notna(fin_df.iloc[188, 6]) else 0.0
     truth["npv_usd"] = fin_df.iloc[192, 6] if pd.notna(fin_df.iloc[192, 6]) else 0.0
     truth["total_capex"] = fin_df.iloc[95, 9] if pd.notna(fin_df.iloc[95, 9]) else 0.0
+    
+    # Extract actual equity cash flows for IRR validation
+    from excel_replica.model.financial import load_excel_equity_cashflows
+    _, excel_equity_irr = load_excel_equity_cashflows(file_path)
+    truth["excel_equity_irr_calc"] = excel_equity_irr
 
     return truth
 

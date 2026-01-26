@@ -8,7 +8,7 @@ Vietnam-specific:
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -205,16 +205,21 @@ def run_financial_model(
         # Net income
         net_income = ebit - tax
 
-        # Debt service (simplified: equal principal + interest)
-        if year <= cfg.debt_tenor_years:
-            principal_payment = debt_amount / cfg.debt_tenor_years
-            interest_payment = (debt_amount - principal_payment * (year - 1)) * cfg.interest_rate
-            debt_service = principal_payment + interest_payment
+        # CFADS (Cash Flow Available for Debt Service) = EBITDA
+        cfads = ebitda
+
+        # Debt service using DSCR sculpting: DS = CFADS / target_DSCR
+        if year <= cfg.debt_tenor_years and cfads > 0:
+            debt_service = cfads / cfg.target_dscr
         else:
             debt_service = 0.0
 
-        # Free cash flow to equity
-        fcfe = net_income + depreciation - debt_service
+        # Dividends = CFADS - Debt Service (Excel approach)
+        # This is what flows to equity holders after debt service
+        dividends = max(cfads - debt_service, 0.0)
+
+        # Free cash flow to equity (for backward compatibility)
+        fcfe = dividends
 
         yearly_data.append({
             "Year": year,
@@ -258,3 +263,30 @@ def run_financial_model(
         npv=npv,
         payback_years=payback,
     )
+
+
+def load_excel_equity_cashflows(file_path: Path) -> Tuple[np.ndarray, float]:
+    """Load actual equity cash flows from Excel Financial sheet.
+    
+    This extracts the Net FCFE row (row 186) which contains the actual
+    dividend cash flows used in Excel's Equity IRR calculation.
+    
+    Args:
+        file_path: Path to Excel workbook.
+        
+    Returns:
+        Tuple of (equity_cf array, calculated IRR).
+    """
+    df = pd.read_excel(file_path, sheet_name="Financial", engine="openpyxl", header=None)
+    
+    # Extract Net FCFE for all years (columns 10-34 = Years 0-24)
+    net_fcfe = []
+    for col in range(10, 35):
+        fcfe = df.iloc[186, col]
+        if pd.notna(fcfe):
+            net_fcfe.append(float(fcfe))
+    
+    equity_cf = np.array(net_fcfe)
+    equity_irr = calculate_irr(equity_cf)
+    
+    return equity_cf, equity_irr

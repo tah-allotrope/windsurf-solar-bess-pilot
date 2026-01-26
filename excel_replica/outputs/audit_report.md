@@ -1,10 +1,10 @@
 # Solar+BESS Model Audit Report
 
-**Generated:** 2026-01-23 14:21:39
+**Generated:** 2026-01-26 10:55:50
 
 ## Executive Summary
 
-⚠️ **5/8 metrics pass** (max error: 667.00%)
+⚠️ **5/9 metrics pass** (max error: 667.00%)
 
 ## Detailed Comparison
 
@@ -15,9 +15,10 @@
 | power_surplus_mwh | 1,087.26 | 1,087.26 | 0.00% | ✅ |
 | charge_mwh | 9,614.65 | 9,614.65 | 0.00% | ✅ |
 | project_irr | 4.70% | 5.07% | 7.33% | ❌ |
-| equity_irr | 3.52% | 8.83% | 60.13% | ❌ |
+| equity_irr | 5.54% | 8.83% | 37.33% | ❌ |
 | npv_usd | $-20,350,769 | $-2,653,309 | 667.00% | ❌ |
 | total_capex | $49,513,200 | $49,513,200 | 0.00% | ✅ |
+| excel_equity_irr_calc | 0.00% | 8.84% | 100.00% | ❌ |
 
 ## Energy Metrics (Year 1)
 
@@ -29,7 +30,7 @@
 ## Financial Metrics
 
 - **Project IRR:** 4.70%
-- **Equity IRR:** 3.52%
+- **Equity IRR:** 5.54%
 - **NPV:** $-20,350,769
 - **Total CAPEX:** $49,513,200
 
